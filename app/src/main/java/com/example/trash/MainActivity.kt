@@ -63,6 +63,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             Toast.makeText(this, "삭제 요청이 완료되었습니다", Toast.LENGTH_SHORT).show()
         })
 
+        val addButton = findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.btn_add)
+        addButton.setOnClickListener({
+            val intent = Intent(this, LocationActivity::class.java)
+            startActivity(intent)
+        })
+
         val closeDetailButton = findViewById<ImageView>(R.id.bt_main_close_detail)
         closeDetailButton.setOnClickListener { viewDetail.visibility = View.GONE }
 

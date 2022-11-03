@@ -36,7 +36,8 @@
                     android:layout_gravity="center"
                     android:text="Review"
                     android:textSize="20dp"
-                    android:textColor="#3CA384" />
+                    android:textColor="#3CA384"
+                    android:textStyle="bold"/>
 
             </androidx.appcompat.widget.Toolbar>
 
@@ -63,15 +64,16 @@
 
         <TextView
             android:id="@+id/trash_name"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:text="상도삼호아파트 주민\n분리수거장"
+            android:layout_marginHorizontal="15dp"
+            android:text="상도삼호아파트 주민 분리수거장"
             android:textColor="#3CA384"
             android:textSize="20dp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/img_trash"
-            app:layout_constraintTop_toTopOf="@id/img_trash" />
+            app:layout_constraintTop_toTopOf="@id/img_trash"
+            app:layout_constraintEnd_toEndOf="@id/view_main_detail"/>
 
         <TextView
             android:id="@+id/trash_address"
@@ -80,6 +82,7 @@
             android:text="서울특별시 동작구 상도로"
             android:textColor="#9CABA7"
             android:textSize="15dp"
+            android:layout_marginTop="5dp"
             app:layout_constraintStart_toStartOf="@id/trash_name"
             app:layout_constraintTop_toBottomOf="@id/trash_name" />
 
@@ -105,7 +108,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_satis"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -119,7 +122,7 @@
 
                 />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_dissatis"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
