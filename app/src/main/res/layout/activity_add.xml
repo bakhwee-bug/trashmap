@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8FFEE"
+    android:background="@color/ivory_200"
     tools:context=".ReviewActivity">
     //앱바
     <androidx.constraintlayout.widget.ConstraintLayout
