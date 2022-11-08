@@ -72,26 +72,31 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mapFragment.getMapAsync(this)
 
 
-
+        //모달
         viewDetail = findViewById(R.id.view_main_detail)
 
+        
+        //모달에서 리뷰쓰기
         val reviewButton = findViewById<ImageView>(R.id.btn_review)
         reviewButton.setOnClickListener({
             val intent = Intent(this, ReviewActivity::class.java)
             startActivity(intent)
         })
-
+        
+        //모달에서 삭제요청
         val deleteButton = findViewById<ImageView>(R.id.btn_delete)
         deleteButton.setOnClickListener({
             Toast.makeText(this, "삭제 요청이 완료되었습니다", Toast.LENGTH_SHORT).show()
         })
-
+        
+        //메인화면에서 +버튼
         val addButton = findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.btn_add)
         addButton.setOnClickListener({
             val intent = Intent(this, LocationActivity::class.java)
             startActivity(intent)
         })
 
+        //모달 닫기 버튼
         val closeDetailButton = findViewById<ImageView>(R.id.bt_main_close_detail)
         closeDetailButton.setOnClickListener {
             viewDetail.visibility = View.GONE
@@ -104,23 +109,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     }
 
-    fun isPermitted(): Boolean {
-        for (perm in permissions) {
-            if (ContextCompat.checkSelfPermission(this, perm) != PackageManager.PERMISSION_GRANTED) {
-                return false
-            }
-        }
-        return true
-    }//권한을 허락 받아야함
-
-    fun startProcess(){
-        val fm = supportFragmentManager
-        val mapFragment = fm.findFragmentById(R.id.map_fragment) as MapFragment?
-            ?: MapFragment.newInstance().also {
-                fm.beginTransaction().add(R.id.map_fragment, it).commit()
-            } //권한
-        mapFragment.getMapAsync(this)
-    } //권한이 있다면 onMapReady연결
 
 
 

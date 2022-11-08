@@ -175,7 +175,6 @@
         android:layout_gravity="end"
         android:background="@color/green_200"
         android:fitsSystemWindows="true"
-
         app:menu="@menu/menu_list" />
 
 </androidx.drawerlayout.widget.DrawerLayout>
