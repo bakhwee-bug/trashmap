@@ -52,5 +52,10 @@ class LoginActivity : AppCompatActivity() {
                 }
             })
         }
+
+        btn_join.setOnClickListener{
+            val intent = Intent(this@LoginActivity, JoinActivity::class.java)
+            startActivity(intent)
+        }
     }
 }
