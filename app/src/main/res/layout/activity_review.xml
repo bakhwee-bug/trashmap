@@ -103,46 +103,25 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:text="쓰레기통 위치 서비스는 만족하셨나요?"
+                android:text="상세위치를 입력해주세요."
                 android:textColor="#3CA384"
                 android:textSize="20dp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <RadioGroup
-                android:id="@+id/radioGroup"
+            <EditText
+                android:id="@+id/edit_add"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                app:layout_constraintStart_toStartOf="@id/que1"
-                app:layout_constraintTop_toBottomOf="@id/que1"
-                android:orientation="horizontal">
-
-
-                <RadioButton
-                    android:id="@+id/btn_satis"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/selector_radio_button"
-                    android:button="@null"
-                    android:text="만족해요"
-                    android:textColor="@drawable/selector_radio_text"
-                    android:layout_marginTop="10dp"
-                    android:paddingHorizontal="10dp"
-                    />
-
-                <RadioButton
-                android:id="@+id/btn_dissatis"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/selector_radio_button"
                 android:layout_marginTop="10dp"
-                android:button="@null"
-                android:text="별로예요"
-                android:textColor="@drawable/selector_radio_text"
-                android:paddingHorizontal="10dp" />
-            </RadioGroup>
+                android:paddingVertical="10dp"
+                android:background="@drawable/edittext_custom"
+                android:hint=" 상세주소"
+                app:layout_constraintBottom_toTopOf="@id/que2"
+                app:layout_constraintTop_toBottomOf="@id/que1"
+                tools:layout_editor_absoluteX="10dp" />
 
             <TextView
                 android:id="@+id/que2"
@@ -155,7 +134,7 @@
                 android:textSize="20dp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/radioGroup" />
+                app:layout_constraintTop_toBottomOf="@id/edit_add" />
 
             <RadioGroup
                 android:id="@+id/radioGroup2"
