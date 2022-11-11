@@ -85,7 +85,17 @@
 
         tools:layout_editor_absoluteX="16dp" />
 
-   //비밀번호 찾기 버튼 넣어야함함
+    <TextView
+        android:id="@+id/find_pw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="비밀번호를 잊으셨나요?"
+        android:textStyle="bold"
+        android:textColor="@color/red"
+        app:layout_constraintTop_toBottomOf="@id/edittext2"
+        app:layout_constraintEnd_toEndOf="@id/edittext2"/>
+
 
    <androidx.appcompat.widget.AppCompatButton
        android:id="@+id/btn_login"
@@ -98,7 +108,7 @@
         android:text="로그인"
         android:textStyle="bold"
         android:textColor="@color/white"
-        app:layout_constraintTop_toBottomOf="@id/edittext2"
+        app:layout_constraintTop_toBottomOf="@id/find_pw"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         />
