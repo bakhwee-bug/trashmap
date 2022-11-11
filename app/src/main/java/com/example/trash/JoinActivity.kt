@@ -49,7 +49,9 @@ class JoinActivity : AppCompatActivity() {
         }
 
 
-        btn_cer.setOnClickListener{
+        var authNum =""
+
+        btn_send.setOnClickListener{
             val email = user_email.text.toString()
             joinService.requestEmail(email).enqueue(object: Callback<Msg>{
                 override fun onFailure(call: Call<Msg>, t: Throwable) {
@@ -64,6 +66,7 @@ class JoinActivity : AppCompatActivity() {
                 override fun onResponse(call: Call<Msg>, response: Response<Msg>) {
                     val login = response.body()
                     Log.d("JOIN","인증번호 : "+login?.message)
+                    authNum = login?.message.toString()
                     var dialog = AlertDialog.Builder(this@JoinActivity)
                     dialog.setTitle("true")
                     dialog.setMessage("인증번호가 전송되었습니다")
@@ -71,6 +74,24 @@ class JoinActivity : AppCompatActivity() {
                 }
             })
         }
+
+        btn_cer.setOnClickListener {
+            val userAuthNum = user_cernum.text.toString()
+            if(userAuthNum==authNum){
+                var dialog = AlertDialog.Builder(this@JoinActivity)
+                dialog.setTitle("true")
+                dialog.setMessage("인증에 성공하였습니다")
+                dialog.show()
+            }
+            else{
+                var dialog = AlertDialog.Builder(this@JoinActivity)
+                dialog.setTitle("true")
+                dialog.setMessage("인증번호가 틀립니다")
+                dialog.show()
+            }
+        }
+
+
 
         btn_join.setOnClickListener {
             val email = user_email.text.toString()
