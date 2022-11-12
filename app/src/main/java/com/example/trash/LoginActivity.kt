@@ -47,30 +47,54 @@ class LoginActivity : AppCompatActivity() {
             var email = edittext1.text.toString()
             var pw = edittext2.text.toString()
 
-            loginService.requestLogin(email,pw).enqueue(object: Callback<Login> {
-                override fun onFailure(call: Call<Login>, t: Throwable) {
-                Log.e("LOGIN", t.message.toString())
+            if(edittext1.text.isNullOrBlank()||edittext2.text.isNullOrBlank()){
                 AlertDialog.Builder(this@LoginActivity).run {
                     setTitle("에러")
-                    setMessage(t.message)
+                    setMessage("이메일과 비밀번호를 모두 입력하세요.")
                     setNegativeButton("확인", null)
                     show()
-                    finish()
-                    }
                 }
-
-                override fun onResponse(call: Call<Login>, response: Response<Login>) {
-                    val login = response.body()
-                    Log.d("LOGIN","msg : "+login?.message)
-                    Log.d("LOGIN","result : "+login?.result)
+            }else{
+                //로그인 요청
+                loginService.requestLogin(email,pw).enqueue(object: Callback<Login> {
+                override fun onFailure(call: Call<Login>, t: Throwable) {
+                    Log.e("LOGIN", t.message.toString())
                     AlertDialog.Builder(this@LoginActivity).run {
-                        setTitle(login?.result)
-                        setMessage(login?.message)
-                        setPositiveButton("확인", eventHandler)
+                        setTitle("에러")
+                        setMessage(t.message)
+                        setNegativeButton("확인", null)
                         show()
                     }
                 }
+
+                override fun onResponse(
+                    call: Call<Login>, response: Response<Login>
+                ) {
+                    if(response.isSuccessful) {
+                        val login = response.body()
+                        Log.d("LOGIN", "msg : " + login?.message)
+                        Log.d("LOGIN", "result : " + login?.result)
+                        AlertDialog.Builder(this@LoginActivity).run {
+                            setTitle(login?.result)
+                            setMessage(login?.message)
+                            setPositiveButton("확인", eventHandler)
+                            show()
+                        }
+                    }else{
+                        val login = response.body()
+                        Log.d("LOGIN", "msg : Hmm.." )
+                        Log.d("LOGIN", "result : 아이디 또는 비밀번호가 잘못되었습니다.")
+                        AlertDialog.Builder(this@LoginActivity).run {
+                            setTitle("error")
+                            setMessage("아이디 또는 비밀번호가 잘못되었습니다.")
+                            setPositiveButton("확인", null)
+                            show()
+                        }
+                    }
+
+                }
             })
+            }
         }
 
 
