@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/ivory_500"
     android:layout_gravity="center"
-    tools:context=".Changepw">
+    tools:context=".ChangePwActivity">
 
 
     <TextView

@@ -2,12 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/menu_item1"
-        android:title="유저 이름"
+        android:title="비밀번호 재설정"
         />
     <item
         android:id="@+id/menu_item2"
-        android:title="포인트: 500p" />
+        android:title="로그아웃" />
     <item
         android:id="@+id/menu_item3"
-        android:title="로그아웃" />
+        android:title="계정 삭제하기" />
 </menu>

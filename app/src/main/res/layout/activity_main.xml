@@ -181,11 +181,13 @@
     //네비
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="end"
         android:background="@color/green_200"
         android:fitsSystemWindows="true"
+        app:itemTextColor="@color/ivory_500"
+        app:headerLayout="@layout/navi_header"
         app:menu="@menu/menu_list" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

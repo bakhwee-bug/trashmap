@@ -32,10 +32,20 @@ import com.google.android.material.navigation.NavigationView
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 
 var permissions = arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION)
 //권한 가져오기
+
+var retrofit = Retrofit.Builder()
+    .baseUrl("http://ec2-3-39-194-139.ap-northeast-2.compute.amazonaws.com:3000/")
+    .addConverterFactory(GsonConverterFactory.create())
+    .build()
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
     OnMapReadyCallback {
@@ -50,6 +60,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
+
 
 
 
@@ -125,16 +136,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menu_item1 -> Toast.makeText(this, "menu_item1 실행", Toast.LENGTH_SHORT).show()
-            R.id.menu_item2 -> Toast.makeText(this, "menu_item2 실행", Toast.LENGTH_SHORT).show()
+            R.id.menu_item1 ->  {
+                val intent = Intent(this, ChangePwActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.menu_item2 -> {
+                var logoutService: LogoutService = retrofit.create(LogoutService::class.java)
+                logoutService.requestLogout()
+                Toast.makeText(this, "로그아웃 완료", Toast.LENGTH_SHORT).show()
+            }
             R.id.menu_item3 -> Toast.makeText(this, "menu_item3 실행", Toast.LENGTH_SHORT).show()
         }
         return false
     }
 
     override fun onMapReady(map: NaverMap) {
-
-
         val marker = Marker()
         marker.position = LatLng(37.5670135, 126.9783740)
         marker.map = map

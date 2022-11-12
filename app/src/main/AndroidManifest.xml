@@ -20,7 +20,7 @@
         android:theme="@style/Theme.Trash"
         tools:targetApi="31">
         <activity
-            android:name=".Changepw"
+            android:name=".ChangePwActivity"
             android:exported="false" />
         <activity
             android:name=".JoinActivity"
