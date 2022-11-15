@@ -1,5 +1,6 @@
 package com.example.trash
 
+import android.provider.ContactsContract
 import com.google.gson.annotations.SerializedName
 
 data class Login (
@@ -10,3 +11,12 @@ data class Login (
 data class Msg(
     @SerializedName("authNum") var message: String
 )
+
+data class User(
+    var email: String,
+    var nickname: String,
+    var point: Int,
+    var add_point: Int,
+    var delete_point: Int,
+    var review_point: Int
+    )
