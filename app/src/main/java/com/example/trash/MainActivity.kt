@@ -14,6 +14,8 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -32,6 +34,7 @@ import com.google.android.material.navigation.NavigationView
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
+import kotlinx.android.synthetic.main.navi_header.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -47,6 +50,8 @@ var retrofit = Retrofit.Builder()
     .addConverterFactory(GsonConverterFactory.create())
     .build()
 
+private lateinit var getResultText: ActivityResultLauncher<Intent>
+
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
     OnMapReadyCallback {
 
@@ -61,7 +66,45 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
+        /*
+        //유저 정보 가져오기
+        val userservice : InfoActivity = retrofit.create(InfoActivity::class.java)
 
+        userservice.requestUser()?.enqueue(object : Callback<User>{
+            override fun onResponse(call: Call<User>, response: Response<User>) {
+                if(response.isSuccessful){
+                    //정상적으로 통신이 된 경우
+                    val user = response.body()
+                    user_name.text = user?.nickname.toString()
+                    user_email.text = user?.email.toString()
+                    user_point.text = user?.point.toString()
+
+                }
+                else{
+                    //통신 실패
+                    Log.d("Main", "onResponse 실패")
+                }
+            }
+
+            override fun onFailure(call: Call<User>, t: Throwable) {
+                //통신 실패
+                Log.d("Main","에러: "+t.message.toString())
+            }
+        })
+        */
+
+        getResultText = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) { result->
+            if(result.resultCode == RESULT_OK){
+                user_email.text = result.data?.getStringExtra("email")
+                user_name.text = result.data?.getStringExtra("nickname")
+                user_point.text = result.data?.getStringExtra("point")
+                Log.d("MAIN", "유저정보 가져오기")
+            }
+        }
+
+        val lintent = Intent(this@MainActivity, LoginActivity::class.java)
+        getResultText.launch(lintent)
 
 
         supportActionBar?.run {
@@ -136,15 +179,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
+            //비밀번호 바꾸기
             R.id.menu_item1 ->  {
                 val intent = Intent(this, ChangePwActivity::class.java)
                 startActivity(intent)
             }
+            //로그아웃
             R.id.menu_item2 -> {
                 var logoutService: LogoutService = retrofit.create(LogoutService::class.java)
                 logoutService.requestLogout()
                 Toast.makeText(this, "로그아웃 완료", Toast.LENGTH_SHORT).show()
             }
+
             R.id.menu_item3 -> Toast.makeText(this, "menu_item3 실행", Toast.LENGTH_SHORT).show()
         }
         return false

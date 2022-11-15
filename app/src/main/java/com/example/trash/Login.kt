@@ -17,6 +17,6 @@ data class User(
     var nickname: String,
     var point: Int,
     var add_point: Int,
-    var delete_point: Int,
+    var del_point: Int,
     var review_point: Int
     )

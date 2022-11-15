@@ -1,5 +1,6 @@
 package com.example.trash
 
+import android.app.ProgressDialog.show
 import android.content.DialogInterface
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -7,6 +8,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.android.synthetic.main.navi_header.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -21,6 +23,7 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
 
 
         val eventHandler = object : DialogInterface.OnClickListener{
@@ -74,11 +77,51 @@ class LoginActivity : AppCompatActivity() {
                         val login = response.body()
                         Log.d("LOGIN", "msg : " + login?.message)
                         Log.d("LOGIN", "result : " + login?.result)
+
+                        //유저 정보 가져오기
+                        val userservice : InfoActivity = retrofit.create(InfoActivity::class.java)
+
+                        userservice.requestUser()?.enqueue(object : Callback<User>{
+                            override fun onResponse(call: Call<User>, response: Response<User>) {
+                                if(response.isSuccessful){
+                                    //정상적으로 통신이 된 경우
+                                    val user = response.body()
+                                    val mIntent = Intent(this@LoginActivity, MainActivity::class.java).apply{
+                                        putExtra("email", user?.email.toString() )
+                                        putExtra("nickname", user?.nickname.toString())
+                                        putExtra("point", user?.point.toString())
+                                        putExtra("add_point", user?.add_point.toString())
+                                        putExtra("delete_point", user?.del_point.toString())
+                                        putExtra("review_point", user?.review_point.toString())
+                                    }
+                                    setResult(RESULT_OK, mIntent)
+                                    finish()
+
+                                }
+                                else {
+                                    //통신 실패
+
+                                    Log.d("Login: User", "onResponse 실패")
+                                }
+                            }
+
+                            override fun onFailure(call: Call<User>, t: Throwable) {
+                                //통신 실패
+                                Log.d("Login: User","에러: "+t.message.toString())
+                            }
+                        })
+
+
+
+
                         AlertDialog.Builder(this@LoginActivity).run {
                             setTitle(login?.result)
                             setMessage(login?.message)
-                            setPositiveButton("확인", eventHandler)
+                            setPositiveButton("확인", null)
                             show()
+
+
+
                         }
                     }else{
                         Log.d("LOGIN", "msg : Hmm.." )
