@@ -95,7 +95,7 @@ class LocationActivity : AppCompatActivity(),
             }
 
             locationCallback = object : LocationCallback() {
-                override fun onLocationResult(locationResult: LocationResult?) {
+                override fun onLocationResult(locationResult: LocationResult) {
                     locationResult ?: return
                     for ((i, location) in locationResult.locations.withIndex()) {
                         Log.d("location: ", "${location.latitude}, ${location.longitude}")

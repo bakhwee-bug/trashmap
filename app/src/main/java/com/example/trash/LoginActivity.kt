@@ -1,12 +1,11 @@
 package com.example.trash
 
-import android.app.ProgressDialog.show
 import android.content.DialogInterface
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.navi_header.*
 import retrofit2.Call
@@ -14,7 +13,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-
+import java.io.IOException
+import android.webkit.CookieManager
 
 
 class LoginActivity : AppCompatActivity() {
@@ -78,10 +78,13 @@ class LoginActivity : AppCompatActivity() {
                         Log.d("LOGIN", "msg : " + login?.message)
                         Log.d("LOGIN", "result : " + login?.result)
 
+
+                        val authToken = "토큰값을 여기 작성"
+
                         //유저 정보 가져오기
                         val userservice : InfoActivity = retrofit.create(InfoActivity::class.java)
 
-                        userservice.requestUser()?.enqueue(object : Callback<User>{
+                        userservice.requestUser(authToken)?.enqueue(object : Callback<User>{
                             override fun onResponse(call: Call<User>, response: Response<User>) {
                                 if(response.isSuccessful){
                                     //정상적으로 통신이 된 경우
@@ -100,14 +103,19 @@ class LoginActivity : AppCompatActivity() {
                                 }
                                 else {
                                     //통신 실패
-
-                                    Log.d("Login: User", "onResponse 실패")
+                                    try {
+                                        val body = response.errorBody()!!.string()
+                                        Log.e("Login:User", "error - body : $body")
+                                    } catch (e: IOException) {
+                                        e.printStackTrace()
+                                    }
                                 }
                             }
 
                             override fun onFailure(call: Call<User>, t: Throwable) {
                                 //통신 실패
                                 Log.d("Login: User","에러: "+t.message.toString())
+                                Log.d("message: ", t.message.toString())
                             }
                         })
 

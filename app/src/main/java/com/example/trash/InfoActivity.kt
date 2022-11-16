@@ -1,12 +1,11 @@
 package com.example.trash
 
 import retrofit2.Call
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.GET
-import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface InfoActivity {
     @GET("/users/info")
-    fun requestUser(): Call<User>
+    fun requestUser(
+        @Header("Authorization") authToken: String
+    ): Call<User>
 }
