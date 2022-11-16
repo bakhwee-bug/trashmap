@@ -15,10 +15,12 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 import android.webkit.CookieManager
+import okhttp3.Cookie
 
 
 class LoginActivity : AppCompatActivity() {
 
+    private var alertDialog: AlertDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,16 +31,15 @@ class LoginActivity : AppCompatActivity() {
         val eventHandler = object : DialogInterface.OnClickListener{
             override fun onClick(p0: DialogInterface?, p1: Int) {
                 if(p1==DialogInterface.BUTTON_POSITIVE){
+                    p0?.dismiss()
                     val intent = Intent(this@LoginActivity, MainActivity::class.java)
                     startActivity(intent)
+
                 }
             }
         }
 
-        var retrofit = Retrofit.Builder()
-            .baseUrl("http://ec2-3-39-194-139.ap-northeast-2.compute.amazonaws.com:3000/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+        val retrofit: Retrofit = RetrofitClient.getInstance()
         var loginService: LoginService = retrofit.create(LoginService::class.java)
 
         find_pw.setOnClickListener{
@@ -51,7 +52,7 @@ class LoginActivity : AppCompatActivity() {
             var pw = edittext2.text.toString()
 
             if(edittext1.text.isNullOrBlank()||edittext2.text.isNullOrBlank()){
-                AlertDialog.Builder(this@LoginActivity).run {
+                alertDialog =AlertDialog.Builder(this@LoginActivity).run {
                     setTitle("에러")
                     setMessage("이메일과 비밀번호를 모두 입력하세요.")
                     setNegativeButton("확인", null)
@@ -62,7 +63,7 @@ class LoginActivity : AppCompatActivity() {
                 loginService.requestLogin(email,pw).enqueue(object: Callback<Login> {
                 override fun onFailure(call: Call<Login>, t: Throwable) {
                     Log.e("LOGIN", t.message.toString())
-                    AlertDialog.Builder(this@LoginActivity).run {
+                    alertDialog = AlertDialog.Builder(this@LoginActivity).run {
                         setTitle("에러")
                         setMessage(t.message)
                         setNegativeButton("확인", null)
@@ -78,13 +79,14 @@ class LoginActivity : AppCompatActivity() {
                         Log.d("LOGIN", "msg : " + login?.message)
                         Log.d("LOGIN", "result : " + login?.result)
 
+                        val token =
+                        Log.d("LOGIN", "token : " + token)
 
-                        val authToken = "토큰값을 여기 작성"
 
                         //유저 정보 가져오기
                         val userservice : InfoActivity = retrofit.create(InfoActivity::class.java)
 
-                        userservice.requestUser(authToken)?.enqueue(object : Callback<User>{
+                        userservice.requestUser().enqueue(object : Callback<User>{
                             override fun onResponse(call: Call<User>, response: Response<User>) {
                                 if(response.isSuccessful){
                                     //정상적으로 통신이 된 경우
@@ -119,26 +121,21 @@ class LoginActivity : AppCompatActivity() {
                             }
                         })
 
-
-
-
-                        AlertDialog.Builder(this@LoginActivity).run {
+                        alertDialog =AlertDialog.Builder(this@LoginActivity).run {
                             setTitle(login?.result)
                             setMessage(login?.message)
-                            setPositiveButton("확인", null)
+                            setPositiveButton("확인", eventHandler)
                             show()
-
-
-
                         }
                     }else{
                         Log.d("LOGIN", "msg : Hmm.." )
                         Log.d("LOGIN", "result : 아이디 또는 비밀번호가 잘못되었습니다.")
-                        AlertDialog.Builder(this@LoginActivity).run {
+                        alertDialog =AlertDialog.Builder(this@LoginActivity).run {
                             setTitle("error")
                             setMessage("아이디 또는 비밀번호가 잘못되었습니다.")
                             setPositiveButton("확인", null)
                             show()
+
                         }
                     }
 
@@ -156,6 +153,15 @@ class LoginActivity : AppCompatActivity() {
 
 
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        //다이얼로그가 띄워져 있는 상태(showing)인 경우 dismiss() 호출
+        if (alertDialog != null && alertDialog!!.isShowing) {
+            alertDialog!!.dismiss()
+        }
     }
 
 
