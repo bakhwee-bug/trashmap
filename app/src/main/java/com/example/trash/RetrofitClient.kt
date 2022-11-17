@@ -5,7 +5,6 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.net.CookieManager
-import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
     private var instance: Retrofit? = null
@@ -13,6 +12,7 @@ object RetrofitClient {
     fun getInstance() : Retrofit {
         if(instance == null){
             var builder = OkHttpClient().newBuilder()
+
 
             var okHttpClient = builder
                 .cookieJar(JavaNetCookieJar(CookieManager()))

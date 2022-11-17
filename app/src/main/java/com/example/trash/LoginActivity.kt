@@ -32,14 +32,14 @@ class LoginActivity : AppCompatActivity() {
             override fun onClick(p0: DialogInterface?, p1: Int) {
                 if(p1==DialogInterface.BUTTON_POSITIVE){
                     p0?.dismiss()
+                    Log.e("Login: eventHandler", "이건 되나..")
                     val intent = Intent(this@LoginActivity, MainActivity::class.java)
                     startActivity(intent)
-
                 }
             }
         }
 
-        val retrofit: Retrofit = RetrofitClient.getInstance()
+        var retrofit: Retrofit = RetrofitClient.getInstance()
         var loginService: LoginService = retrofit.create(LoginService::class.java)
 
         find_pw.setOnClickListener{
@@ -79,29 +79,31 @@ class LoginActivity : AppCompatActivity() {
                         Log.d("LOGIN", "msg : " + login?.message)
                         Log.d("LOGIN", "result : " + login?.result)
 
-                        val token =
+                        val token = response.headers().values("Set-Cookie")
                         Log.d("LOGIN", "token : " + token)
 
 
                         //유저 정보 가져오기
                         val userservice : InfoActivity = retrofit.create(InfoActivity::class.java)
+                        Log.e("Login:userservice", "이건 되나..")
 
-                        userservice.requestUser().enqueue(object : Callback<User>{
+                        userservice.requestUser(token).enqueue(object : Callback<User>{
                             override fun onResponse(call: Call<User>, response: Response<User>) {
                                 if(response.isSuccessful){
                                     //정상적으로 통신이 된 경우
+                                    Log.e("Login:onResponse", "유저서비스의 리퀘스트유저")
                                     val user = response.body()
                                     val mIntent = Intent(this@LoginActivity, MainActivity::class.java).apply{
-                                        putExtra("email", user?.email.toString() )
+                                        /*putExtra("email", user?.email.toString() )
                                         putExtra("nickname", user?.nickname.toString())
                                         putExtra("point", user?.point.toString())
                                         putExtra("add_point", user?.add_point.toString())
                                         putExtra("delete_point", user?.del_point.toString())
-                                        putExtra("review_point", user?.review_point.toString())
+                                        putExtra("review_point", user?.review_point.toString())*/
+
+
                                     }
                                     setResult(RESULT_OK, mIntent)
-                                    finish()
-
                                 }
                                 else {
                                     //통신 실패
