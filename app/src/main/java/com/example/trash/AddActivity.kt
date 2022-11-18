@@ -50,26 +50,13 @@ class AddActivity : AppCompatActivity() {
 
             // use your lat, long value here
             if (addressList != null && addressList.isNotEmpty()) {
-                val address = addressList[0]
-                val sb = StringBuilder()
-                for (i in 0 until address.maxAddressLineIndex) {
-                    sb.append(address.getAddressLine(i)).append("\n")
-                }
+                val address = addressList.get(0)
+                Log.d("address", address.toString())
+                var sb = StringBuilder()
+                sb.append(address.adminArea).append(" ")
+                sb.append(address.thoroughfare).append(" ")
+                sb.append(address.featureName).append(" ")
 
-                // Various Parameters of an Address are appended
-                // to generate a complete Address
-                if (address.premises != null)
-                    sb.append(address.premises).append(", ")
-
-                sb.append(address.subAdminArea).append("\n")
-                sb.append(address.locality).append(", ")
-                sb.append(address.adminArea).append(", ")
-                sb.append(address.countryName).append(", ")
-                sb.append(address.postalCode)
-
-                // StringBuilder sb is converted into a string
-                // and this value is assigned to the
-                // initially declared addressString string.
                 addressString = sb.toString()
                 Log.d("addressString", addressString)
                 trash_address.text = addressString
