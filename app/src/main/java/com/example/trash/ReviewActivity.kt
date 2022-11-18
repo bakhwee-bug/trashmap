@@ -59,7 +59,7 @@ class ReviewActivity : AppCompatActivity() {
                     Log.d("넘어간 Review: status", status.toString())
                     Log.d("넘어간 Review: detail", detail)
                     Log.e("Main: eventHandler", "이벤트 헨들러")
-                    Toast.makeText(this@ReviewActivity, "추가 완료", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ReviewActivity, "리뷰 완료", Toast.LENGTH_SHORT).show()
                     finish()
                 }
             })

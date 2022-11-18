@@ -22,21 +22,10 @@ class LoginActivity : AppCompatActivity() {
 
     private var alertDialog: AlertDialog? = null
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-
-
-
-        val eventHandler = object : DialogInterface.OnClickListener{
-            override fun onClick(p0: DialogInterface?, p1: Int) {
-                if(p1==DialogInterface.BUTTON_POSITIVE){
-                    p0?.dismiss()
-                    Log.e("Login: eventHandler", "이벤트 헨들러")
-
-                }
-            }
-        }
 
         var retrofit: Retrofit = RetrofitClient.getInstance()
         var loginService: LoginService = retrofit.create(LoginService::class.java)
@@ -103,11 +92,13 @@ class LoginActivity : AppCompatActivity() {
                                     alertDialog =AlertDialog.Builder(this@LoginActivity).run {
                                         setTitle(login?.result)
                                         setMessage(login?.message)
-                                        setPositiveButton("확인", eventHandler)
+                                        setPositiveButton("확인"){dialog, which->
+                                            dialog.dismiss()
+                                            finish()
+                                            startActivity(intent)
+                                        }
                                         show()
                                     }
-                                    startActivity(intent)
-
                                 }
                                 else {
                                     //통신 실패
@@ -135,7 +126,6 @@ class LoginActivity : AppCompatActivity() {
                             setMessage("아이디 또는 비밀번호가 잘못되었습니다.")
                             setPositiveButton("확인", null)
                             show()
-
                         }
                     }
 

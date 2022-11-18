@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Trash</string>
+    <string name="app_name">쓰레기통 어딨어?</string>
     <string name="user_name">사용자 이름</string>
     <string name="user_email">사용자 메일</string>
     <string name="user_point">사용자 포인트</string>

@@ -52,15 +52,25 @@ class JoinActivity : AppCompatActivity() {
 
 
                 override fun onResponse(call: Call<Login>, response: Response<Login>) {
-                    val login = response.body()
-                    Log.d("JOIN","msg : "+login?.message)
-                    Log.d("JOIN","result : "+login?.result)
+                    if(response.isSuccessful) {
+                        val login = response.body()
+                        Log.d("JOIN", "msg : " + login?.message)
+                        Log.d("JOIN", "result : " + login?.result)
 
-                    AlertDialog.Builder(this@JoinActivity).run {
-                        setTitle(login?.result)
-                        setMessage(login?.message)
-                        setNegativeButton("확인", null)
-                        show()
+                        AlertDialog.Builder(this@JoinActivity).run {
+                            setTitle(login?.result)
+                            setMessage(login?.message)
+                            setNegativeButton("확인", null)
+                            show()
+                        }
+                    }
+                    else{
+                        AlertDialog.Builder(this@JoinActivity).run {
+                            setTitle("false")
+                            setMessage("이미 가입한 이메일입니다.")
+                            setNegativeButton("확인", null)
+                            show()
+                        }
                     }
                 }
             })
