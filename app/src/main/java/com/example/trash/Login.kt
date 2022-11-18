@@ -21,3 +21,7 @@ data class User(
     var del_point: Int,
     var review_point: Int
     ): Serializable
+/*
+data class Trash(
+
+)*/

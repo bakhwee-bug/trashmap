@@ -93,13 +93,6 @@ class LoginActivity : AppCompatActivity() {
                                     Log.e("Login:onResponse", "유저서비스의 리퀘스트유저")
                                     val user = response.body()
                                     val intent = Intent(this@LoginActivity, MainActivity::class.java).apply {
-                                        /*putExtra("email", user?.email.toString() )
-                                        putExtra("nickname", user?.nickname.toString())
-                                        putExtra("point", user?.point.toString())
-                                        putExtra("add_point", user?.add_point.toString())
-                                        putExtra("delete_point", user?.del_point.toString())
-                                        putExtra("review_point", user?.review_point.toString())*/
-                                        //user 넘겨주기
                                         putExtra("object", user)
                                     }
 
@@ -110,6 +103,7 @@ class LoginActivity : AppCompatActivity() {
                                         show()
                                     }
                                     startActivity(intent)
+
                                 }
                                 else {
                                     //통신 실패

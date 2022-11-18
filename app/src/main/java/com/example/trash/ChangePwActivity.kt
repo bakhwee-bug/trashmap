@@ -27,10 +27,7 @@ class ChangePwActivity : AppCompatActivity() {
             }
         }
 
-        var retrofit = Retrofit.Builder()
-            .baseUrl("http://ec2-3-39-194-139.ap-northeast-2.compute.amazonaws.com:3000/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+        var retrofit: Retrofit = RetrofitClient.getInstance()
         var passwordService : PasswordService = retrofit.create(PasswordService::class.java)
 
         //현비번==입력값?

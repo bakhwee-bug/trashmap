@@ -1,6 +1,7 @@
 package com.example.trash
 
 import android.annotation.SuppressLint
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
@@ -18,11 +19,13 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.UiThread
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Transformations.map
@@ -44,10 +47,12 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
     OnMapReadyCallback {
-
+    private var alertDialog: AlertDialog? = null
     private lateinit var navigationView: NavigationView
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var viewDetail: ConstraintLayout
+
+    var retrofit: Retrofit = RetrofitClient.getInstance()
    /* private lateinit var mTextView: TextView
     private lateinit var mailTextView: TextView
     private lateinit var pointTextView: TextView
@@ -64,7 +69,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mTextView = findViewById<TextView>(R.layout.navi_header)
         mailTextView = findViewById<TextView>(R.id.user_email)
         pointTextView = findViewById<TextView>(R.id.user_point)
-*/
+
+        */
 
 
         supportActionBar?.run {
@@ -152,6 +158,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return super.onOptionsItemSelected(item)
     }
 
+    val eventHandler = object : DialogInterface.OnClickListener{
+        override fun onClick(p0: DialogInterface?, p1: Int) {
+            if(p1== DialogInterface.BUTTON_POSITIVE){
+                var leaveService : LeaveService = retrofit.create(LeaveService::class.java)
+                leaveService.requestLeave().enqueue(object: Callback<Msg>{
+                    override fun onFailure(call: Call<Msg>, t:Throwable) {
+                        Toast.makeText(this@MainActivity, "탈퇴 실패", Toast.LENGTH_SHORT).show()
+                    }
+                    override fun onResponse(call: Call<Msg>, response: Response<Msg>) {
+                        p0?.dismiss()
+                        Log.e("Main: eventHandler", "이벤트 헨들러")
+                        Toast.makeText(this@MainActivity, "탈퇴 완료", Toast.LENGTH_SHORT).show()
+                    }
+                })
+                
+            }
+        }
+    }
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             //비밀번호 바꾸기
@@ -163,12 +187,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.menu_item2 -> {
                /* var logoutService: LogoutService = retrofit.create(LogoutService::class.java)
                 logoutService.requestLogout()*/
+
                 val lintent = Intent(this@MainActivity, LoginActivity::class.java)
                 startActivity(lintent)
                 Toast.makeText(this, "로그아웃 완료", Toast.LENGTH_SHORT).show()
             }
 
-            R.id.menu_item3 -> Toast.makeText(this, "menu_item3 실행", Toast.LENGTH_SHORT).show()
+            //회원탈퇴
+            R.id.menu_item3 -> {
+
+                alertDialog = AlertDialog.Builder(this@MainActivity).run {
+                    setTitle("확인")
+                    setMessage("정말 탈퇴하시겠습니까?")
+                    setPositiveButton("예", eventHandler)
+                    setNegativeButton("아니오", null)
+                    show()
+                }
+
+            }
         }
         return false
     }
