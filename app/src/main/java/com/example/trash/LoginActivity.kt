@@ -32,9 +32,8 @@ class LoginActivity : AppCompatActivity() {
             override fun onClick(p0: DialogInterface?, p1: Int) {
                 if(p1==DialogInterface.BUTTON_POSITIVE){
                     p0?.dismiss()
-                    Log.e("Login: eventHandler", "이건 되나..")
-                    val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                    startActivity(intent)
+                    Log.e("Login: eventHandler", "이벤트 헨들러")
+
                 }
             }
         }
@@ -93,17 +92,24 @@ class LoginActivity : AppCompatActivity() {
                                     //정상적으로 통신이 된 경우
                                     Log.e("Login:onResponse", "유저서비스의 리퀘스트유저")
                                     val user = response.body()
-                                    val mIntent = Intent(this@LoginActivity, MainActivity::class.java).apply{
+                                    val intent = Intent(this@LoginActivity, MainActivity::class.java).apply {
                                         /*putExtra("email", user?.email.toString() )
                                         putExtra("nickname", user?.nickname.toString())
                                         putExtra("point", user?.point.toString())
                                         putExtra("add_point", user?.add_point.toString())
                                         putExtra("delete_point", user?.del_point.toString())
                                         putExtra("review_point", user?.review_point.toString())*/
-
-
+                                        //user 넘겨주기
+                                        putExtra("object", user)
                                     }
-                                    setResult(RESULT_OK, mIntent)
+
+                                    alertDialog =AlertDialog.Builder(this@LoginActivity).run {
+                                        setTitle(login?.result)
+                                        setMessage(login?.message)
+                                        setPositiveButton("확인", eventHandler)
+                                        show()
+                                    }
+                                    startActivity(intent)
                                 }
                                 else {
                                     //통신 실패
@@ -123,12 +129,6 @@ class LoginActivity : AppCompatActivity() {
                             }
                         })
 
-                        alertDialog =AlertDialog.Builder(this@LoginActivity).run {
-                            setTitle(login?.result)
-                            setMessage(login?.message)
-                            setPositiveButton("확인", eventHandler)
-                            show()
-                        }
                     }else{
                         Log.d("LOGIN", "msg : Hmm.." )
                         Log.d("LOGIN", "result : 아이디 또는 비밀번호가 잘못되었습니다.")

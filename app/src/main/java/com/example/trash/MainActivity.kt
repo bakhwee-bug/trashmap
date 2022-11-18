@@ -41,10 +41,6 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-private lateinit var getResultText: ActivityResultLauncher<Intent>
-
-
-
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
     OnMapReadyCallback {
 
@@ -61,16 +57,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
 
-        getResultText = registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()) { result->
-            if(result.resultCode == RESULT_OK){
-                user_email.text = result.data?.getStringExtra("email")
-                user_name.text = result.data?.getStringExtra("nickname")
-                user_point.text = result.data?.getStringExtra("point")
-                Log.d("MAIN", "유저정보 가져오기")
-            }
-        }
-
+        val user = intent.getSerializableExtra("key") as User
+        user_name.text = user.nickname
+        user_email.text = user.email
+        user_point.text = user.point.toString()
 
 
 
@@ -152,7 +142,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                /* var logoutService: LogoutService = retrofit.create(LogoutService::class.java)
                 logoutService.requestLogout()*/
                 val lintent = Intent(this@MainActivity, LoginActivity::class.java)
-                getResultText.launch(lintent)
+                startActivity(lintent)
                 Toast.makeText(this, "로그아웃 완료", Toast.LENGTH_SHORT).show()
             }
 

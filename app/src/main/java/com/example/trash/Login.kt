@@ -2,6 +2,7 @@ package com.example.trash
 
 import android.provider.ContactsContract
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class Login (
     var result: String,
@@ -19,4 +20,4 @@ data class User(
     var add_point: Int,
     var del_point: Int,
     var review_point: Int
-    )
+    ): Serializable
