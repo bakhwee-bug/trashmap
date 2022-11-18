@@ -6,7 +6,6 @@ import retrofit2.http.GET
 
 //로그아웃
 interface LogoutService{
-    @FormUrlEncoded
     @GET("/users/logout")
     fun requestLogout(
     ) : Call<Msg>

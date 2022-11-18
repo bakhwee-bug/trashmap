@@ -8,36 +8,32 @@ interface TrashService {
     @FormUrlEncoded
     @POST("/trash/add")
     fun requestAddTrash(
-        @Field("name") name:String,
+        @Field("trash_name") trash_name:String,
         @Field("address") address:String,
-        @Field("kind") kind:String,
-        @Field("altitude") altitude:String,
-        @Field("latitude") latitude:String,
-        @Field("full_status") full_status:String
+        @Field("kind") kind:Int,
+        @Field("latitude") latitude:Double,
+        @Field("longitude") longitude:Double,
+        @Field("full_status") full_status:Int,
+        @Field("detail") detail:String
     ): Call<Login>
 
     //쓰레기통 수정
     @FormUrlEncoded
     @PATCH("/trash/update/status")
     fun requestUpdateTrash(
-        @Field("trash_id") trash_id:String,
-        @Field("full_status") full_status:String
+        @Field("id") id:Int,
+        @Field("full_status") full_status:Int,
+        @Field("detail") detail:String
     ):Call<Login>
 
-    //쓰레기통 삭제 요청
+    //쓰레기통 삭제 요청1
     @FormUrlEncoded
     @PATCH("/trash/update/delete")
     fun requestDeleteTrash(
-        @Field("trash_id") trash_id:String,
-        @Field("user_id") user_id:String
+        @Field("id") id:String
     ):Call<Login>
 
-    //쓰레기통 삭제 요청
-    @FormUrlEncoded
-    @GET("/trash/select/id")
-    fun requestSelectId(
-        @Field("trash_id") trash_id:String
-    ):Call<Trash>
+
 
 
 }

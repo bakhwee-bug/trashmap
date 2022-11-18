@@ -1,9 +1,12 @@
 package com.example.trash
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Geocoder
 import android.location.Location
+import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Looper
@@ -21,6 +24,9 @@ import com.google.android.gms.location.LocationServices
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
+import com.google.android.gms.location.*
+import java.util.*
+
 
 class LocationActivity : AppCompatActivity(),
     OnMapReadyCallback {
@@ -32,17 +38,23 @@ class LocationActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_location)
+
+
+
         if (isPermitted()) {
             startProcess()
         } else {
             ActivityCompat.requestPermissions(this, permissions, permission_request)
         }//권한 확인
 
+
+
         //화면 넘어가기
         val addButton = findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.btn_add)
         addButton.setOnClickListener({
             val intent = Intent(this, AddActivity::class.java)
             startActivity(intent)
+            finish()
         })
 
     }
@@ -88,11 +100,11 @@ class LocationActivity : AppCompatActivity(),
 
         @SuppressLint("MissingPermission")
         fun setUpdateLocationListner() {
-            val locationRequest = LocationRequest.create()
-            locationRequest.run {
+            val locationRequest = LocationRequest.create().apply {
                 priority = LocationRequest.PRIORITY_HIGH_ACCURACY //높은 정확도
                 interval = 1000 //1초에 한번씩 GPS 요청
             }
+
 
             locationCallback = object : LocationCallback() {
                 override fun onLocationResult(locationResult: LocationResult) {
@@ -126,10 +138,6 @@ class LocationActivity : AppCompatActivity(),
 
             //marker.map = null
         }
-
-
-
-
 
 
     }

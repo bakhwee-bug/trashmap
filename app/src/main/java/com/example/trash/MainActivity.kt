@@ -117,6 +117,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
 
         mapFragment.getMapAsync(this)
+        
+        //마커 불러오기 구현
 
 
         //모달
@@ -196,10 +198,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             //로그아웃
             R.id.menu_item2 -> {
                 var logoutService: LogoutService = retrofit.create(LogoutService::class.java)
-                logoutService.requestLogout()
-                val lintent = Intent(this@MainActivity, LoginActivity::class.java)
-                startActivity(lintent)
-                Toast.makeText(this, "로그아웃 완료", Toast.LENGTH_SHORT).show()
+                logoutService.requestLogout().enqueue(object: Callback<Msg> {
+                    override fun onFailure(call: Call<Msg>, t:Throwable) {
+                        Toast.makeText(this@MainActivity, "로그아웃 실패", Toast.LENGTH_SHORT).show()
+                    }
+                    override fun onResponse(call: Call<Msg>, response: Response<Msg>) {
+                        val logout = response.body()
+                        Toast.makeText(this@MainActivity, "로그아웃 완료", Toast.LENGTH_SHORT).show()
+                        Log.d("MAIN: LOGOUT", logout?.message.toString())
+                        finish()
+                    }
+
+                })
             }
 
             //회원탈퇴
