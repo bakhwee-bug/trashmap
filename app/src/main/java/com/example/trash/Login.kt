@@ -30,15 +30,21 @@ data class TrashInfo(
     var detail: String
 )
 
+data class JsonTrash(
+    val data: List<Trash>
+)
+
+
 data class Trash(
     var id: Int,
-    var address: String,
-    var longitude: Double,
-    var latitude: Double,
-    var trash_name: String,
-    var detail: String,
+    var address: String?,
+    var detail: String?,
     var kind: Int,
     var full_status: Int,
+    var latitude: Double,
+    var longitude: Double,
+    var delete_point: Int,
+    var trash_name: String,
     var author: Int
 ): Serializable, TedClusterItem {
     override fun getTedLatLng(): TedLatLng {

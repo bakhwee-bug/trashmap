@@ -1,52 +1,32 @@
 package com.example.trash
 
-import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.content.pm.PackageManager.PERMISSION_GRANTED
-import android.graphics.Color
-import android.inputmethodservice.Keyboard
-import android.location.Location
-import android.location.LocationRequest
 import android.os.Bundle
-import android.os.Looper
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.UiThread
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.Transformations.map
 import com.google.android.gms.location.*
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
 import com.google.android.material.navigation.NavigationView
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.navi_header.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import ted.gun0912.clustering.naver.TedNaverClustering
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
@@ -68,14 +48,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
-
-        /*
-        mTextView = findViewById<TextView>(R.layout.navi_header)
-        mailTextView = findViewById<TextView>(R.id.user_email)
-        pointTextView = findViewById<TextView>(R.id.user_point)
-
-        */
-
 
         supportActionBar?.run {
             setDisplayHomeAsUpEnabled(true)
@@ -101,13 +73,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val nickname = intent.getStringExtra("user_name")
         val point = intent.getStringExtra("user_point")
 
-
-        /* mTextView.text = user?.nickname.toString()
-         mailTextView.text = user?.email.toString()
-         pointTextView.text = user?.point.toString()
- */
-
-        Log.d("닉네임", user?.nickname.toString())
         nametext.text = nickname
         mailtext.text = email
         pointtext.text = point
@@ -129,18 +94,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         viewDetail = findViewById(R.id.view_main_detail)
 
         
-        //모달에서 리뷰쓰기
-        val reviewButton = findViewById<ImageView>(R.id.btn_review)
-        reviewButton.setOnClickListener({
-            val intent = Intent(this, ReviewActivity::class.java)
-            startActivity(intent)
-        })
-        
-        //모달에서 삭제요청
-        val deleteButton = findViewById<ImageView>(R.id.btn_delete)
-        deleteButton.setOnClickListener({
-            Toast.makeText(this, "삭제 요청이 완료되었습니다", Toast.LENGTH_SHORT).show()
-        })
+
         
         //메인화면에서 +버튼
         val addButton = findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.btn_add)
@@ -254,38 +208,74 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             true
         }
 
-        fun updateMarker(rows: List<Trash>) {
+        fun updateMarker(rows: JsonTrash) {
             Log.d("MAIN: updateMarker", "updateMarker 완료")
             // 마커 클러스터링
             TedNaverClustering.with<Trash>(this@MainActivity, map)
                 .customMarker { // 마커를 원하는 모양으로 변경
                     Marker().apply {
                         icon = OverlayImage.fromResource(R.drawable.gps_can)
-                        width = 60
-                        height = 86
+                        width = 120
+                        height = 120
                     }
                 }
-                .items(rows)
+                .markerClickListener { //마커 눌렀을 때
+                    Log.d("클릭된 쓰레기통: ", "{$it}")
+                    //var TrashData = rows.data
+                    trash_name.text = it.address
+                    trash_detail.text = it.detail
+                    val inputname = it.address
+                    val inputdetail = it.detail
+                    val trash_id = it.id
+                    val user_id = it.author
+                    viewDetail.visibility = View.VISIBLE
+                    val addButton = findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.btn_add)
+                    addButton.hide()
+                    //모달에서 리뷰쓰기
+                    val reviewButton = findViewById<ImageView>(R.id.btn_review)
+                    reviewButton.setOnClickListener({
+                        val intent = Intent(this, ReviewActivity::class.java).apply {
+                            putExtra("name", inputname)
+                            putExtra("detail", inputdetail)
+                            putExtra("trash_id", trash_id)
+                            putExtra("user_id", user_id)
+                        }
+                        startActivity(intent)
+                    })
+                    true
+                }
+                .items(rows.data)
                 .make()
-        }
+
+            }
+
 
             var trashService: TrashService = retrofit.create(TrashService::class.java)
-            trashService.requestAll().enqueue(object: Callback<Trash> {
-                override fun onFailure(call: Call<Trash>, t:Throwable) {
+            trashService.requestAll().enqueue(object: Callback<JsonTrash> {
+                override fun onFailure(call: Call<JsonTrash>, t:Throwable) {
                     Toast.makeText(this@MainActivity, "loadTrash 실패", Toast.LENGTH_SHORT).show()
                 }
-                override fun onResponse(call: Call<Trash>, response: Response<Trash>) {
+                override fun onResponse(call: Call<JsonTrash>, response: Response<JsonTrash>) {
                     val trash = response.body()
                     Toast.makeText(this@MainActivity, "loadTrash 완료", Toast.LENGTH_SHORT).show()
                     Log.d("MAIN: loadTrash", trash.toString())
                     if (trash != null) {
-                        //updateMarker()
+                        updateMarker(trash)
                     }
+                    Log.d("MAIN: requestAll", "requestAll 완료")
                 }
             })
 
 
-        Log.d("MAIN: requestAll", "requestAll 완료")
+
+            //모달에서 삭제요청
+            val deleteButton = findViewById<ImageView>(R.id.btn_delete)
+            deleteButton.setOnClickListener({
+                Toast.makeText(this, "삭제 요청이 완료되었습니다", Toast.LENGTH_SHORT).show()
+            })
+
+
+
 
 
 
@@ -294,10 +284,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
 
-
-    //lateinit var tedNaverClustering: TedNaverClustering<Trash>
-
-    // 리스트들 마커 찍기
 
 
 

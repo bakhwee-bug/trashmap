@@ -17,7 +17,7 @@ interface TrashService {
         @Field("detail") detail:String
     ): Call<Login>
 
-    //쓰레기통 수정
+    //쓰레기통 리뷰
     @FormUrlEncoded
     @PATCH("/trash/update/status")
     fun requestUpdateTrash(
@@ -36,7 +36,7 @@ interface TrashService {
     //쓰레기통 조회(3이 안될 때 쓰는 거)
     @GET("/trash/select/all")
     fun requestAll(
-    ):Call<Trash>
+    ):Call<JsonTrash>
 
     //쓰레기통 조회2
     @GET("/trash/select/id")
@@ -51,7 +51,7 @@ interface TrashService {
         @Field("x2") x2: Double,
         @Field("y1") y1: Double,
         @Field("y2") y2: Double,
-    ):Call<ArrayList<Trash>>
+    ):Call<JsonTrash>
 
 
 }

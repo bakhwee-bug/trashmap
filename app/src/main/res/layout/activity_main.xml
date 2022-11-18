@@ -75,6 +75,7 @@
             android:backgroundTint="@color/green_200"
             android:padding="24dp"
             android:visibility="gone"
+            android:maxLines="3"
             app:layout_constraintBottom_toBottomOf="parent">
 
             <ImageView
@@ -92,15 +93,16 @@
                 android:src="@drawable/img"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 />
 
             <TextView
                 android:id="@+id/trash_name"
-                android:layout_width="wrap_content"
+                android:layout_width="230dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="100dp"
                 android:layout_marginLeft="10dp"
-                android:text="상도삼호아파트 주민\n분리수거장"
+                android:text="상도삼호아파트\n 주민분리수거장"
                 android:textStyle="bold"
                 android:textSize="20dp"
                 android:textColor="@color/white"
@@ -110,7 +112,7 @@
 
             <TextView
                 android:id="@+id/trash_detail"
-                android:layout_width="wrap_content"
+                android:layout_width="230dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="100dp"
                 android:text="상세위치.."
@@ -118,6 +120,14 @@
                 android:textColor="#D1D1D1"
                 app:layout_constraintStart_toStartOf="@id/trash_name"
                 app:layout_constraintTop_toBottomOf="@id/trash_name" />
+            <ImageView
+                android:id="@+id/status_bar"
+                android:layout_width="230dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/img_status"
+                app:layout_constraintStart_toEndOf="@id/img_trash"
+                app:layout_constraintTop_toBottomOf="@id/trash_detail"/>
+
 
             <ImageView
                 android:layout_width="60dp"
@@ -128,7 +138,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="10dp"
                 app:layout_constraintStart_toStartOf="@id/trash_name"
-                app:layout_constraintTop_toBottomOf="@id/trash_detail"
+                app:layout_constraintTop_toBottomOf="@id/status_bar"
                 app:layout_constraintEnd_toStartOf="@id/btn_delete"
                 app:layout_constraintHorizontal_chainStyle="spread"
                 />
@@ -142,7 +152,7 @@
                 android:layout_marginLeft="40dp"
                 android:layout_marginRight="10dp"
                 app:layout_constraintStart_toEndOf="@id/btn_review"
-                app:layout_constraintTop_toBottomOf="@id/trash_detail"
+                app:layout_constraintTop_toBottomOf="@id/status_bar"
                 />
 
             <TextView

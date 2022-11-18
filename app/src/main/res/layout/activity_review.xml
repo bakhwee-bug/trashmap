@@ -136,7 +136,7 @@
                 app:layout_constraintTop_toBottomOf="@id/edit_add" />
 
             <RadioGroup
-                android:id="@+id/radioGroup2"
+                android:id="@+id/statusGroup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
@@ -193,7 +193,7 @@
                 android:backgroundTint="@color/green_200"
                 android:text="리뷰 등록하기"
                 android:textColor="@color/white"
-                app:layout_constraintTop_toBottomOf="@id/radioGroup2"
+                app:layout_constraintTop_toBottomOf="@id/statusGroup"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 />
