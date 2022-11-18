@@ -94,6 +94,10 @@ class LoginActivity : AppCompatActivity() {
                                     val user = response.body()
                                     val intent = Intent(this@LoginActivity, MainActivity::class.java).apply {
                                         putExtra("object", user)
+                                        putExtra("user_name", user?.nickname)
+                                        putExtra("user_email", user?.email)
+                                        putExtra("user_point", user?.point.toString())
+
                                     }
 
                                     alertDialog =AlertDialog.Builder(this@LoginActivity).run {

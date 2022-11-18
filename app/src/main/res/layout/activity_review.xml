@@ -27,7 +27,6 @@
                 android:background="#FFFAD0"
                 android:elevation="20dp"
                 android:outlineProvider="none"
-
                 >
 
                 <TextView

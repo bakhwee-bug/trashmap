@@ -11,9 +11,5 @@ class AddActivity : AppCompatActivity() {
         val user = intent.getSerializableExtra("key") as User?
 
 
-
-
-
-
     }
 }

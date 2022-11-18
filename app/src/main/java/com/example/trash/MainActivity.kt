@@ -93,13 +93,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
         val user = intent.getSerializableExtra("key") as User?
+        val email = intent.getStringExtra("user_email")
+        val nickname = intent.getStringExtra("user_name")
+        val point = intent.getStringExtra("user_point")
+
+
         /* mTextView.text = user?.nickname.toString()
          mailTextView.text = user?.email.toString()
          pointTextView.text = user?.point.toString()
  */
-        nametext.text = user?.nickname
-        mailtext.text = user?.email
-        pointtext.text = user?.point.toString()
+
+        Log.d("닉네임", user?.nickname.toString())
+        nametext.text = nickname
+        mailtext.text = email
+        pointtext.text = point
+
 
 
         val fm = supportFragmentManager
@@ -187,9 +195,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             //로그아웃
             R.id.menu_item2 -> {
-               /* var logoutService: LogoutService = retrofit.create(LogoutService::class.java)
-                logoutService.requestLogout()*/
-
+                var logoutService: LogoutService = retrofit.create(LogoutService::class.java)
+                logoutService.requestLogout()
                 val lintent = Intent(this@MainActivity, LoginActivity::class.java)
                 startActivity(lintent)
                 Toast.makeText(this, "로그아웃 완료", Toast.LENGTH_SHORT).show()
