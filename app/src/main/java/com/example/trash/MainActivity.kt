@@ -131,7 +131,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //메인화면에서 +버튼
         val addButton = findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.btn_add)
         addButton.setOnClickListener({
-            val intent = Intent(this, LocationActivity::class.java)
+            val intent = Intent(this, LocationActivity::class.java).apply {
+                putExtra("object", user)
+            }
             startActivity(intent)
         })
 

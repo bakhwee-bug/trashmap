@@ -7,5 +7,13 @@ class AddActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add)
+
+        val user = intent.getSerializableExtra("key") as User?
+
+
+
+
+
+
     }
 }
