@@ -48,7 +48,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="false"></activity>
-//아무의미없는주석
+
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
             android:value="id39b4uh3o" />

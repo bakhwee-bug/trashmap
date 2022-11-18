@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -47,6 +48,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var navigationView: NavigationView
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var viewDetail: ConstraintLayout
+   /* private lateinit var mTextView: TextView
+    private lateinit var mailTextView: TextView
+    private lateinit var pointTextView: TextView
+*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,13 +60,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-
-
-        val user = intent.getSerializableExtra("key") as User
-        user_name.text = user.nickname
-        user_email.text = user.email
-        user_point.text = user.point.toString()
-
+        /*
+        mTextView = findViewById<TextView>(R.layout.navi_header)
+        mailTextView = findViewById<TextView>(R.id.user_email)
+        pointTextView = findViewById<TextView>(R.id.user_point)
+*/
 
 
         supportActionBar?.run {
@@ -70,9 +73,28 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             setDisplayShowTitleEnabled(false)
         }
 
+
+
         drawerLayout = findViewById(R.id.drawer_layout)
         navigationView = findViewById(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener(this)
+
+
+        var header = navigationView.getHeaderView(0)
+        val nametext = header.findViewById<TextView>(R.id.user_name)
+        val mailtext = header.findViewById<TextView>(R.id.user_email)
+        val pointtext = header.findViewById<TextView>(R.id.user_point)
+
+
+        val user = intent.getSerializableExtra("key") as User?
+        /* mTextView.text = user?.nickname.toString()
+         mailTextView.text = user?.email.toString()
+         pointTextView.text = user?.point.toString()
+ */
+        nametext.text = user?.nickname
+        mailtext.text = user?.email
+        pointtext.text = user?.point.toString()
+
 
         val fm = supportFragmentManager
         val mapFragment = fm.findFragmentById(R.id.map_fragment) as MapFragment?
