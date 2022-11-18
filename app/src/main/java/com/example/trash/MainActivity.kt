@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.Color
+import android.inputmethodservice.Keyboard
 import android.location.Location
 import android.location.LocationRequest
 import android.os.Bundle
@@ -28,6 +29,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.Transformations.map
 import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationCallback
@@ -38,12 +40,14 @@ import com.google.android.material.navigation.NavigationView
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.OverlayImage
 import kotlinx.android.synthetic.main.navi_header.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import ted.gun0912.clustering.naver.TedNaverClustering
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
     OnMapReadyCallback {
@@ -233,6 +237,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         marker.position = LatLng(37.5670135, 126.9783740)
         marker.map = map
 
+        //loadTrash()
+
         marker.setOnClickListener {
             map.moveCamera(
                 CameraUpdate.scrollTo(
@@ -247,7 +253,52 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             addButton.hide()
             true
         }
+
+        fun updateMarker(rows: List<Trash>) {
+            Log.d("MAIN: updateMarker", "updateMarker 완료")
+            // 마커 클러스터링
+            TedNaverClustering.with<Trash>(this@MainActivity, map)
+                .customMarker { // 마커를 원하는 모양으로 변경
+                    Marker().apply {
+                        icon = OverlayImage.fromResource(R.drawable.gps_can)
+                        width = 60
+                        height = 86
+                    }
+                }
+                .items(rows)
+                .make()
+        }
+
+            var trashService: TrashService = retrofit.create(TrashService::class.java)
+            trashService.requestAll().enqueue(object: Callback<Trash> {
+                override fun onFailure(call: Call<Trash>, t:Throwable) {
+                    Toast.makeText(this@MainActivity, "loadTrash 실패", Toast.LENGTH_SHORT).show()
+                }
+                override fun onResponse(call: Call<Trash>, response: Response<Trash>) {
+                    val trash = response.body()
+                    Toast.makeText(this@MainActivity, "loadTrash 완료", Toast.LENGTH_SHORT).show()
+                    Log.d("MAIN: loadTrash", trash.toString())
+                    if (trash != null) {
+                        //updateMarker()
+                    }
+                }
+            })
+
+
+        Log.d("MAIN: requestAll", "requestAll 완료")
+
+
+
+
+
     }
+
+
+
+    //lateinit var tedNaverClustering: TedNaverClustering<Trash>
+
+    // 리스트들 마커 찍기
+
 
 
 

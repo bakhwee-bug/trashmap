@@ -33,7 +33,25 @@ interface TrashService {
         @Field("id") id:String
     ):Call<Login>
 
+    //쓰레기통 조회(3이 안될 때 쓰는 거)
+    @GET("/trash/select/all")
+    fun requestAll(
+    ):Call<Trash>
 
+    //쓰레기통 조회2
+    @GET("/trash/select/id")
+    fun requestIdTrash(
+    ):Call<TrashInfo>
+
+    //쓰레기통 조회3
+
+    @GET("/trash/select/display")
+    fun requestLocationTrash(
+        @Field("x1") x1: Double,
+        @Field("x2") x2: Double,
+        @Field("y1") y1: Double,
+        @Field("y2") y2: Double,
+    ):Call<ArrayList<Trash>>
 
 
 }
