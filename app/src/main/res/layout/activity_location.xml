@@ -53,6 +53,19 @@
 
 
 
+        <ImageView
+            android:id="@+id/marker"
+            android:layout_width="30sp"
+            android:layout_height="40sp"
+            android:src="@drawable/marker"
+            android:layout_centerInParent="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent""
+            />
+
+
         //모달
 
 

@@ -30,7 +30,7 @@ interface TrashService {
     @FormUrlEncoded
     @PATCH("/trash/update/delete")
     fun requestDeleteTrash(
-        @Field("id") id:String
+        @Field("id") id:Int
     ):Call<Login>
 
     //쓰레기통 조회(3이 안될 때 쓰는 거)

@@ -49,13 +49,7 @@ class LocationActivity : AppCompatActivity(),
 
 
 
-        //화면 넘어가기
-        val addButton = findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.btn_add)
-        addButton.setOnClickListener({
-            val intent = Intent(this, AddActivity::class.java)
-            startActivity(intent)
-            finish()
-        })
+
 
     }
 
@@ -78,13 +72,14 @@ class LocationActivity : AppCompatActivity(),
         } //권한이 있다면 onMapReady연결
 
 
-        @UiThread
+
         override fun onMapReady(naverMap: NaverMap){
 
             val cameraPosition = CameraPosition(
                 LatLng(37.5666102, 126.9783881),  // 위치 지정
                 16.0 // 줌 레벨
             )
+
             naverMap.cameraPosition = cameraPosition
             this.naverMap = naverMap
 
@@ -137,7 +132,22 @@ class LocationActivity : AppCompatActivity(),
             naverMap.minZoom = 5.0
 
             //marker.map = null
+
+
+            //화면 넘어가기
+            val addButton = findViewById<androidx.appcompat.widget.AppCompatButton>(R.id.btn_add)
+            addButton.setOnClickListener(){
+                val intent = Intent(this, AddActivity::class.java).apply {
+                    putExtra("latitude", location.latitude)
+                    putExtra("longitude", location.longitude)
+                }
+                startActivity(intent)
+                finish()
+            }
         }
+    //화면 넘어가기
+
+
 
 
     }

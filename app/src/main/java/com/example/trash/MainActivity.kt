@@ -1,18 +1,23 @@
 package com.example.trash
 
+import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.content.Intent
+import android.location.Location
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.UiThread
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.gms.location.*
@@ -21,6 +26,8 @@ import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
+import com.naver.maps.map.util.FusedLocationSource
+import kotlinx.android.synthetic.main.activity_join.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.navi_header.*
 import retrofit2.Call
@@ -35,6 +42,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var navigationView: NavigationView
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var viewDetail: ConstraintLayout
+    private lateinit var map: NaverMap
+    private val PERMISSION_REQUEST_CODE = 100
 
     var retrofit: Retrofit = RetrofitClient.getInstance()
    /* private lateinit var mTextView: TextView
@@ -80,7 +89,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
         val fm = supportFragmentManager
-        val mapFragment = fm.findFragmentById(R.id.map_fragment) as MapFragment?
+        var mapFragment = fm.findFragmentById(R.id.map_fragment) as MapFragment?
             ?: MapFragment.newInstance().also {
                 fm.beginTransaction().add(R.id.map_fragment, it).commit()
             }
@@ -98,12 +107,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         
         //메인화면에서 +버튼
         val addButton = findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.btn_add)
-        addButton.setOnClickListener({
+        addButton.setOnClickListener(){
             val intent = Intent(this, LocationActivity::class.java).apply {
                 putExtra("object", user)
             }
             startActivity(intent)
-        })
+        }
 
         //모달 닫기 버튼
         val closeDetailButton = findViewById<ImageView>(R.id.bt_main_close_detail)
@@ -111,6 +120,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             viewDetail.visibility = View.GONE
             addButton.show()
         }
+        //현재 위치를 받아오기 위한 어쩌구
+        val mLocationSource = FusedLocationSource(this@MainActivity, PERMISSION_REQUEST_CODE)
+
 
     }
 
@@ -186,12 +198,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return false
     }
 
+    @UiThread
     override fun onMapReady(map: NaverMap) {
         val marker = Marker()
-        marker.position = LatLng(37.5670135, 126.9783740)
-        marker.map = map
+        val cameraPosition = CameraPosition(
+            LatLng(37.496594, 126.956995),  // 위치 지정
+            16.0 // 줌 레벨
+        )
+        map.cameraPosition = cameraPosition
+        this.map = map
 
-        //loadTrash()
 
         marker.setOnClickListener {
             map.moveCamera(
@@ -219,30 +235,65 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         height = 120
                     }
                 }
+                .customCluster { // 클러스터 View 를 원하는 모양으로 변경
+                    TextView(this).apply {
+                        setBackgroundColor(ContextCompat.getColor(this@MainActivity, R.color.green_200))
+                        setTextColor(ContextCompat.getColor(this@MainActivity, R.color.white))
+                        text = "${it.size}개"
+                        setPadding(10, 10, 10, 10)
+                    }
+                }
                 .markerClickListener { //마커 눌렀을 때
                     Log.d("클릭된 쓰레기통: ", "{$it}")
                     //var TrashData = rows.data
+                    Marker().apply {
+                        width = 150
+                        height = 150
+                    }
                     trash_name.text = it.address
                     trash_detail.text = it.detail
                     val inputname = it.address
                     val inputdetail = it.detail
-                    val trash_id = it.id
-                    val user_id = it.author
+                    val trashId = it.id
+                    val userId = it.author
+                    var status = it.full_status
+                    when(status){
+                        1 -> status_bar.setImageResource(R.drawable.img_status)
+                        2 -> status_bar.setImageResource(R.drawable.img_status2)
+                        3 -> status_bar.setImageResource(R.drawable.img_status3)
+                    }
+
                     viewDetail.visibility = View.VISIBLE
                     val addButton = findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.btn_add)
                     addButton.hide()
                     //모달에서 리뷰쓰기
                     val reviewButton = findViewById<ImageView>(R.id.btn_review)
-                    reviewButton.setOnClickListener({
+                    reviewButton.setOnClickListener(){
                         val intent = Intent(this, ReviewActivity::class.java).apply {
                             putExtra("name", inputname)
                             putExtra("detail", inputdetail)
-                            putExtra("trash_id", trash_id)
-                            putExtra("user_id", user_id)
+                            putExtra("trash_id", trashId)
+                            putExtra("user_id", userId)
                         }
                         startActivity(intent)
-                    })
-                    true
+                    }
+                    //모달에서 삭제요청
+                    val deleteButton = findViewById<ImageView>(R.id.btn_delete)
+                    deleteButton.setOnClickListener(){
+                        val trashService: TrashService = retrofit.create(TrashService::class.java)
+                        trashService.requestDeleteTrash(trashId).enqueue(object: Callback<Login> {
+                            override fun onFailure(call: Call<Login>, t:Throwable) {
+                                Toast.makeText(this@MainActivity, "requestDeleteTrash 실패", Toast.LENGTH_SHORT).show()
+                            }
+                            override fun onResponse(call: Call<Login>, response: Response<Login>) {
+                                val delete = response.body()
+                                Toast.makeText(this@MainActivity, "requestDeleteTrash 완료", Toast.LENGTH_SHORT).show()
+                                Log.d("MAIN: DeleteTrash", delete?.message.toString())
+                            }
+
+                        })
+                        Toast.makeText(this, "삭제 요청이 완료되었습니다", Toast.LENGTH_SHORT).show()
+                    }
                 }
                 .items(rows.data)
                 .make()
@@ -250,7 +301,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
 
 
-            var trashService: TrashService = retrofit.create(TrashService::class.java)
+            val trashService: TrashService = retrofit.create(TrashService::class.java)
             trashService.requestAll().enqueue(object: Callback<JsonTrash> {
                 override fun onFailure(call: Call<JsonTrash>, t:Throwable) {
                     Toast.makeText(this@MainActivity, "loadTrash 실패", Toast.LENGTH_SHORT).show()
@@ -265,19 +316,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     Log.d("MAIN: requestAll", "requestAll 완료")
                 }
             })
-
-
-
-            //모달에서 삭제요청
-            val deleteButton = findViewById<ImageView>(R.id.btn_delete)
-            deleteButton.setOnClickListener({
-                Toast.makeText(this, "삭제 요청이 완료되었습니다", Toast.LENGTH_SHORT).show()
-            })
-
-
-
-
-
 
 
 
