@@ -1,5 +1,6 @@
 package com.example.trash
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -34,16 +35,31 @@ class ReviewActivity : AppCompatActivity() {
                 "\n메인에서 넘어 온 작성자 id: " + authorId.toString() +
                 "\n메인에서 넘어 온 쓰레기통 id: " + trashId.toString())
 
+        btn_full.setOnClickListener {
+            var trashStatus1 = statusGroup.getCheckedRadioButtonId().toString()
+            Log.d("버튼1= ", trashStatus1)
+        }
+        btn_suit.setOnClickListener {
+            var trashStatus1 = statusGroup.getCheckedRadioButtonId().toString()
+            Log.d("버튼2= ", trashStatus1)
+        }
+        btn_empty.setOnClickListener {
+            var trashStatus1 = statusGroup.getCheckedRadioButtonId().toString()
+            Log.d("버튼3= ", trashStatus1)
+        }
+
         review_trash.setOnClickListener {
 
             val detail = edit_add.text.toString()
-            val trashStatus = statusGroup.getCheckedRadioButtonId().toString()
-            Log.d("Review: check_status= ", trashStatus)
+            var trashStatus = statusGroup.getCheckedRadioButtonId().toString()
 
-            var status = when(trashStatus){
-                "2131296366" -> 1
-                "2131296372" -> 2
-                "2131296365" -> 3
+            
+            
+
+            val status = when(trashStatus){
+                "2131296367" -> 1
+                "2131296374" -> 2
+                "2131296366" -> 3
                 else -> 1
             }
             Log.d("Review: status= ", status.toString())
@@ -60,7 +76,9 @@ class ReviewActivity : AppCompatActivity() {
                     Log.d("넘어간 Review: detail", detail)
                     Log.e("Main: eventHandler", "이벤트 헨들러")
                     Toast.makeText(this@ReviewActivity, "리뷰 완료", Toast.LENGTH_SHORT).show()
-                    finish()
+                    val intent = Intent(this@ReviewActivity, MainActivity::class.java)
+                    finishAffinity()
+                    startActivity(intent)
                 }
             })
         }

@@ -24,6 +24,7 @@ class JoinActivity : AppCompatActivity() {
             override fun onClick(p0: DialogInterface?, p1: Int) {
                 if(p1== DialogInterface.BUTTON_POSITIVE){
                     val intent = Intent(this@JoinActivity, LoginActivity::class.java)
+                    finish()
                     startActivity(intent)
                 }
             }

@@ -94,7 +94,7 @@ class LoginActivity : AppCompatActivity() {
                                         setMessage(login?.message)
                                         setPositiveButton("확인"){dialog, which->
                                             dialog.dismiss()
-                                            finish()
+                                            finishAffinity()
                                             startActivity(intent)
                                         }
                                         show()

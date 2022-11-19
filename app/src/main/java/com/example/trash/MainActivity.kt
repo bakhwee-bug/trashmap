@@ -154,12 +154,42 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         p0?.dismiss()
                         Log.e("Main: eventHandler", "이벤트 헨들러")
                         Toast.makeText(this@MainActivity, "탈퇴 완료", Toast.LENGTH_SHORT).show()
+                        finishAffinity()
                     }
                 })
                 
             }
         }
     }
+
+
+
+    val logoutEventHandler = object : DialogInterface.OnClickListener{
+        override fun onClick(p0: DialogInterface?, p1: Int) {
+            if(p1== DialogInterface.BUTTON_POSITIVE){
+                var logoutService: LogoutService = retrofit.create(LogoutService::class.java)
+                logoutService.requestLogout().enqueue(object: Callback<Msg> {
+                    override fun onFailure(call: Call<Msg>, t:Throwable) {
+                        Toast.makeText(this@MainActivity, "로그아웃 실패", Toast.LENGTH_SHORT).show()
+                    }
+                    override fun onResponse(call: Call<Msg>, response: Response<Msg>) {
+                        p0?.dismiss()
+                        Log.e("Main: eventHandler", "이벤트 헨들러")
+                        val logout = response.body()
+                        Toast.makeText(this@MainActivity, "로그아웃 완료", Toast.LENGTH_SHORT).show()
+                        Log.d("MAIN: LOGOUT", logout?.message.toString())
+                        //로그아웃하면 로그인 페이지 나오고 Main 끝내기
+                        val intent = Intent(this@MainActivity, LoginActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    }
+                })
+
+            }
+        }
+    }
+
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             //비밀번호 바꾸기
@@ -169,19 +199,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             //로그아웃
             R.id.menu_item2 -> {
-                var logoutService: LogoutService = retrofit.create(LogoutService::class.java)
-                logoutService.requestLogout().enqueue(object: Callback<Msg> {
-                    override fun onFailure(call: Call<Msg>, t:Throwable) {
-                        Toast.makeText(this@MainActivity, "로그아웃 실패", Toast.LENGTH_SHORT).show()
-                    }
-                    override fun onResponse(call: Call<Msg>, response: Response<Msg>) {
-                        val logout = response.body()
-                        Toast.makeText(this@MainActivity, "로그아웃 완료", Toast.LENGTH_SHORT).show()
-                        Log.d("MAIN: LOGOUT", logout?.message.toString())
-                        finish()
-                    }
 
-                })
+                alertDialog = AlertDialog.Builder(this@MainActivity).run {
+                    setTitle("확인")
+                    setMessage("로그아웃 하시겠습니까?")
+                    setPositiveButton("예", logoutEventHandler)
+                    setNegativeButton("아니오", null)
+                    show()
+                }
+
             }
 
             //회원탈퇴
@@ -259,6 +285,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     val trashId = it.id
                     val userId = it.author
                     var status = it.full_status
+                    val kind = it.kind
                     when(status){
                         1 -> status_bar.setImageResource(R.drawable.img_status)
                         2 -> status_bar.setImageResource(R.drawable.img_status2)

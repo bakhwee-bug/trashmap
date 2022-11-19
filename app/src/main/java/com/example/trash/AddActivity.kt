@@ -1,6 +1,7 @@
 package com.example.trash
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
@@ -12,6 +13,9 @@ import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import kotlinx.android.synthetic.main.activity_add.*
+import kotlinx.android.synthetic.main.activity_add.edit_add
+import kotlinx.android.synthetic.main.activity_add.trash_address
+import kotlinx.android.synthetic.main.activity_review.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -78,26 +82,30 @@ class AddActivity : AppCompatActivity() {
             return
         }
 
-
-
-
-
-
-        /*try {
-            mResultList = mGeocoder.getFromLocation(
-                lat!!, lng!!, 1
-            )
-        }catch (e: IOException){
-            e.printStackTrace()
+        btn_trash.setOnClickListener {
+            var trashStatus1 = radioGroup.getCheckedRadioButtonId().toString()
+            Log.d("btn_trash= ", trashStatus1)
         }
-        if(mResultList!=null){
-            Log.d("CheckCurrentLocation", mResultList[0].getAddressLine(0))
-            currentLocation = mResultList[0].getAddressLine(0)
-            currentLocation = currentLocation.substring(11)
+        btn_siga.setOnClickListener {
+            var trashStatus1 = radioGroup.getCheckedRadioButtonId().toString()
+            Log.d("btn_siga= ", trashStatus1)
         }
-
-        trash_address.text = currentLocation*/
-
+        btn_recycle.setOnClickListener {
+            var trashStatus1 = radioGroup.getCheckedRadioButtonId().toString()
+            Log.d("btn_recycle= ", trashStatus1)
+        }
+        status1.setOnClickListener {
+            var trashStatus1 = radioGroup2.getCheckedRadioButtonId().toString()
+            Log.d("status1= ", trashStatus1)
+        }
+        status2.setOnClickListener {
+            var trashStatus1 = radioGroup2.getCheckedRadioButtonId().toString()
+            Log.d("status2= ", trashStatus1)
+        }
+        status3.setOnClickListener {
+            var trashStatus1 = radioGroup2.getCheckedRadioButtonId().toString()
+            Log.d("status3= ", trashStatus1)
+        }
 
 
         add_trash.setOnClickListener{
@@ -113,9 +121,9 @@ class AddActivity : AppCompatActivity() {
 
 
             when (tKind){
-                "2131296373" -> kind = 1
-                "2131296839" -> kind = 2
-                "2131296369" ->kind = 3
+                "2131296375" -> kind = 1
+                "2131296373" -> kind = 2
+                "2131296370" ->kind = 3
             }
 
 
@@ -123,29 +131,41 @@ class AddActivity : AppCompatActivity() {
             var tLongitude = aLongitude
             var trashFullStatus = radioGroup2.getCheckedRadioButtonId().toString()
             var status = when (trashFullStatus){
-                "2131296734" -> 1
-                "2131296735" -> 2
-                "2131296736" -> 3
+                "2131296738" -> 1
+                "2131296739" -> 2
+                "2131296740" -> 3
                 else -> 1
             }
             val detail = edit_add.text.toString()
             Log.d("detail", detail)
-            trashService.requestAddTrash(tName, tAddress, kind, tLatitude, tLongitude, status,detail)
+            trashService.requestAddTrash(tName, tAddress, kind, tLatitude, tLongitude, status, detail)
                 .enqueue(object: Callback<Login> {
                 override fun onFailure(call: Call<Login>, t:Throwable) {
                     Toast.makeText(this@AddActivity, "add 실패", Toast.LENGTH_SHORT).show()
                 }
                 override fun onResponse(call: Call<Login>, response: Response<Login>) {
-                    Log.e("Main: eventHandler", "이벤트 헨들러")
-                    Toast.makeText(this@AddActivity, "추가 완료", Toast.LENGTH_SHORT).show()
-                    Log.d("Review: AddTrash", "tName: " + tName)
-                    Log.d("Review: AddTrash:", "tAddress: " + tAddress)
-                    Log.d("Review: AddTrash", "kind: " + kind.toString())
-                    Log.d("Review: AddTrash", "tLatitude: " + tLatitude.toString())
-                    Log.d("Review: AddTrash", "tLongitude: " + tLongitude.toString())
-                    Log.d("Review: AddTrash", "status: " + status.toString())
-                    Log.d("Review: AddTrash", "detail: " + detail)
-                    finish()
+                    if(response.isSuccessful) {
+                        Log.e("Main: eventHandler", "이벤트 헨들러")
+                        Toast.makeText(this@AddActivity, "추가 완료", Toast.LENGTH_LONG).show()
+                        Log.d("Review: AddTrash", "tName: " + tName)
+                        Log.d("Review: AddTrash:", "tAddress: " + tAddress)
+                        Log.d("Review: AddTrash", "kind: " + kind.toString())
+                        Log.d("Review: AddTrash", "tLatitude: " + tLatitude.toString())
+                        Log.d("Review: AddTrash", "tLongitude: " + tLongitude.toString())
+                        Log.d("Review: AddTrash", "status: " + status.toString())
+                        Log.d("Review: AddTrash", "detail: " + detail)
+                        val intent = Intent(this@AddActivity, MainActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    }else{
+                        try {
+                            val body = response.errorBody()!!.string()
+
+                            Log.e("Login:User", "error - body : $body")
+                        } catch (e: IOException) {
+                            e.printStackTrace()
+                        }
+                    }
                 }
             })
         }

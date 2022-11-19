@@ -22,7 +22,8 @@ class ChangePwActivity : AppCompatActivity() {
             override fun onClick(p0: DialogInterface?, p1: Int) {
                 if(p1== DialogInterface.BUTTON_POSITIVE){
                     val intent = Intent(this@ChangePwActivity, LoginActivity::class.java)
-                    startActivity(intent)
+                    finishAffinity() //비밀번호 설정 성공 -> 스택에 있는 모든 액티비티 종료하고 
+                    startActivity(intent) //로그인 화면 실행
                 }
             }
         }
