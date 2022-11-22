@@ -26,16 +26,44 @@ import java.util.*
 
 class AddActivity : AppCompatActivity() {
     val permission_request = 99
+    var token : String? = ""
     var permissions = arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION)
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add)
 
-        //val user = intent.getSerializableExtra("key") as User?
-
         var retrofit: Retrofit = RetrofitClient.getInstance()
         var trashService: TrashService = retrofit.create(TrashService::class.java)
+
+        token = intent.getStringExtra("token")
+        val userservice : InfoActivity = retrofit.create(InfoActivity::class.java)
+
+        userservice.requestUser(token).enqueue(object : Callback<User> {
+            override fun onResponse(call: Call<User>, response: Response<User>) {
+                if(response.isSuccessful){
+                    //정상적으로 통신이 된 경우
+                    Log.e("Login:onResponse", "유저서비스의 리퀘스트유저")
+                    val user = response.body()
+
+                }
+                else {
+                    //통신 실패
+                    try {
+                        val body = response.errorBody()!!.string()
+                        Log.e("Login:User", "error - body : $body")
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<User>, t: Throwable) {
+                //통신 실패
+                Log.d("MAIN: User","에러: "+t.message.toString())
+                Log.d("message: ", t.message.toString())
+            }
+        })
 
         val aLatitude = intent.getDoubleExtra("latitude", 37.492657)
         val aLongitude = intent.getDoubleExtra("longitude", 126.957594)
@@ -121,9 +149,9 @@ class AddActivity : AppCompatActivity() {
 
 
             when (tKind){
-                "2131296375" -> kind = 1
-                "2131296373" -> kind = 2
-                "2131296370" ->kind = 3
+                "2131296367" -> kind = 1
+                "2131296374" -> kind = 2
+                "2131296366" ->kind = 3
             }
 
 
@@ -154,7 +182,9 @@ class AddActivity : AppCompatActivity() {
                         Log.d("Review: AddTrash", "tLongitude: " + tLongitude.toString())
                         Log.d("Review: AddTrash", "status: " + status.toString())
                         Log.d("Review: AddTrash", "detail: " + detail)
-                        val intent = Intent(this@AddActivity, MainActivity::class.java)
+                        val intent = Intent(this@AddActivity, MainActivity::class.java).apply{
+                            putExtra("token", token)
+                        }
                         startActivity(intent)
                         finish()
                     }else{

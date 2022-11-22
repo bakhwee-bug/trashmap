@@ -18,15 +18,21 @@ import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import kotlinx.android.synthetic.main.activity_add.*
 import kotlinx.android.synthetic.main.activity_location.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
 import java.io.IOException
 import java.util.*
 
 
 class LocationActivity : AppCompatActivity(),
     OnMapReadyCallback {
+        var retrofit: Retrofit = RetrofitClient.getInstance()
         val permission_request = 99
         private lateinit var naverMap: NaverMap
         var permissions = arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION)
+        var token : String? = ""
         //권한 가져오기
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,6 +40,34 @@ class LocationActivity : AppCompatActivity(),
         setContentView(R.layout.activity_location)
 
 
+        token = intent.getStringExtra("token")
+        val userservice : InfoActivity = retrofit.create(InfoActivity::class.java)
+
+        userservice.requestUser(token).enqueue(object : Callback<User> {
+            override fun onResponse(call: Call<User>, response: Response<User>) {
+                if(response.isSuccessful){
+                    //정상적으로 통신이 된 경우
+                    Log.e("Login:onResponse", "유저서비스의 리퀘스트유저")
+                    val user = response.body()
+
+                }
+                else {
+                    //통신 실패
+                    try {
+                        val body = response.errorBody()!!.string()
+                        Log.e("Login:User", "error - body : $body")
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<User>, t: Throwable) {
+                //통신 실패
+                Log.d("MAIN: User","에러: "+t.message.toString())
+                Log.d("message: ", t.message.toString())
+            }
+        })
 
         if (isPermitted()) {
             startProcess()
@@ -123,6 +157,7 @@ class LocationActivity : AppCompatActivity(),
                 val intent = Intent(this, AddActivity::class.java).apply {
                     putExtra("latitude", location.latitude)
                     putExtra("longitude", location.longitude)
+                    putExtra("token", token)
                 }
                 startActivity(intent)
                 finish()

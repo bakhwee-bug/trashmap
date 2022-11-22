@@ -67,7 +67,7 @@ class LoginActivity : AppCompatActivity() {
                         Log.d("LOGIN", "msg : " + login?.message)
                         Log.d("LOGIN", "result : " + login?.result)
 
-                        val token = response.headers().values("Set-Cookie")
+                        val token = response.headers().values("Set-Cookie").toString()
                         Log.d("LOGIN", "token : " + token)
 
 
@@ -82,7 +82,7 @@ class LoginActivity : AppCompatActivity() {
                                     Log.e("Login:onResponse", "유저서비스의 리퀘스트유저")
                                     val user = response.body()
                                     val intent = Intent(this@LoginActivity, MainActivity::class.java).apply {
-                                        putExtra("object", user)
+                                        putExtra("token", token)
                                         putExtra("user_name", user?.nickname)
                                         putExtra("user_email", user?.email)
                                         putExtra("user_point", user?.point.toString())

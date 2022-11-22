@@ -35,6 +35,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import ted.gun0912.clustering.naver.TedNaverClustering
+import java.io.IOException
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
     OnMapReadyCallback {
@@ -46,6 +47,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private val PERMISSION_REQUEST_CODE = 100
     private final var FINISH_INTERVAL_TIME: Long = 2000
     private var backPressedTime: Long = 0
+    var token : String? = ""
 
     var retrofit: Retrofit = RetrofitClient.getInstance()
    /* private lateinit var mTextView: TextView
@@ -73,23 +75,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navigationView.setNavigationItemSelectedListener(this)
 
 
-        var header = navigationView.getHeaderView(0)
-        val nametext = header.findViewById<TextView>(R.id.user_name)
-        val mailtext = header.findViewById<TextView>(R.id.user_email)
-        val pointtext = header.findViewById<TextView>(R.id.user_point)
-
-
-        val user = intent.getSerializableExtra("key") as User?
-        val email = intent.getStringExtra("user_email")
-        val nickname = intent.getStringExtra("user_name")
-        val point = intent.getStringExtra("user_point")
-
-        nametext.text = nickname
-        mailtext.text = email
-        pointtext.text = point
-
-
-
         val fm = supportFragmentManager
         var mapFragment = fm.findFragmentById(R.id.map_fragment) as MapFragment?
             ?: MapFragment.newInstance().also {
@@ -111,7 +96,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val addButton = findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.btn_add)
         addButton.setOnClickListener(){
             val intent = Intent(this, LocationActivity::class.java).apply {
-                putExtra("object", user)
+                putExtra("token", token)
             }
             startActivity(intent)
         }
@@ -129,6 +114,55 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
 
+    override fun onStart(){
+        super.onStart()
+        var header = navigationView.getHeaderView(0)
+        val nametext = header.findViewById<TextView>(R.id.user_name)
+        val mailtext = header.findViewById<TextView>(R.id.user_email)
+        val pointtext = header.findViewById<TextView>(R.id.user_point)
+
+
+        token = intent.getStringExtra("token")
+        val userservice : InfoActivity = retrofit.create(InfoActivity::class.java)
+
+        userservice.requestUser(token).enqueue(object : Callback<User>{
+            override fun onResponse(call: Call<User>, response: Response<User>) {
+                if(response.isSuccessful){
+                    //정상적으로 통신이 된 경우
+                    Log.e("Login:onResponse", "유저서비스의 리퀘스트유저")
+                    val user = response.body()
+                    nametext.text = user?.nickname.toString()
+                    mailtext.text = user?.email.toString()
+                    pointtext.text = user?.point.toString()
+
+                }
+                else {
+                    //통신 실패
+                    try {
+                        val body = response.errorBody()!!.string()
+                        Log.e("Login:User", "error - body : $body")
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<User>, t: Throwable) {
+                //통신 실패
+                Log.d("MAIN: User","에러: "+t.message.toString())
+                Log.d("message: ", t.message.toString())
+            }
+        })
+
+        val fm = supportFragmentManager
+        var mapFragment = fm.findFragmentById(R.id.map_fragment) as MapFragment?
+            ?: MapFragment.newInstance().also {
+                fm.beginTransaction().add(R.id.map_fragment, it).commit()
+            }
+
+        mapFragment.getMapAsync(this)
+
+    }
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -285,7 +319,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     val trashId = it.id
                     val userId = it.author
                     var status = it.full_status
-                    val kind = it.kind
                     when(status){
                         1 -> status_bar.setImageResource(R.drawable.img_status)
                         2 -> status_bar.setImageResource(R.drawable.img_status2)
@@ -303,6 +336,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             putExtra("detail", inputdetail)
                             putExtra("trash_id", trashId)
                             putExtra("user_id", userId)
+                            putExtra("token", token)
                         }
                         startActivity(intent)
                     }

@@ -6,6 +6,6 @@ import retrofit2.http.*
 interface InfoActivity {
     @GET("/users/info")
     fun requestUser(
-        @Header("access_token") accessToken: List<String>
+        @Header("access_token") accessToken: String?
     ): Call<User>
 }

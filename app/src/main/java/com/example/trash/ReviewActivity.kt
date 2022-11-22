@@ -12,8 +12,10 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
+import java.io.IOException
 
 class ReviewActivity : AppCompatActivity() {
+    var token : String? = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,6 +23,36 @@ class ReviewActivity : AppCompatActivity() {
 
         val retrofit: Retrofit = RetrofitClient.getInstance()
         val trashService: TrashService = retrofit.create(TrashService::class.java)
+
+
+        token = intent.getStringExtra("token")
+        val userservice : InfoActivity = retrofit.create(InfoActivity::class.java)
+
+        userservice.requestUser(token).enqueue(object : Callback<User>{
+            override fun onResponse(call: Call<User>, response: Response<User>) {
+                if(response.isSuccessful){
+                    //정상적으로 통신이 된 경우
+                    Log.e("Login:onResponse", "유저서비스의 리퀘스트유저")
+                    val user = response.body()
+
+                }
+                else {
+                    //통신 실패
+                    try {
+                        val body = response.errorBody()!!.string()
+                        Log.e("Login:User", "error - body : $body")
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<User>, t: Throwable) {
+                //통신 실패
+                Log.d("MAIN: User","에러: "+t.message.toString())
+                Log.d("message: ", t.message.toString())
+            }
+        })
 
         trash_name.text = intent.getStringExtra("name")
         trash_address.text = intent.getStringExtra("detail")
@@ -68,15 +100,17 @@ class ReviewActivity : AppCompatActivity() {
             trashService.requestUpdateTrash(trashId, status, detail).enqueue(object:
                 Callback<Login> {
                 override fun onFailure(call: Call<Login>, t:Throwable) {
-                    Toast.makeText(this@ReviewActivity, "add 실패", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ReviewActivity, "리뷰 실패", Toast.LENGTH_SHORT).show()
                 }
                 override fun onResponse(call: Call<Login>, response: Response<Login>) {
                     Log.d("넘어간 Review: trashId", trashId.toString())
                     Log.d("넘어간 Review: status", status.toString())
                     Log.d("넘어간 Review: detail", detail)
                     Log.e("Main: eventHandler", "이벤트 헨들러")
-                    Toast.makeText(this@ReviewActivity, "리뷰 완료", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this@ReviewActivity, MainActivity::class.java)
+                    Toast.makeText(this@ReviewActivity, "리뷰 완료", Toast.LENGTH_LONG).show()
+                    val intent = Intent(this@ReviewActivity, MainActivity::class.java).apply {
+                        putExtra("token", token)
+                    }
                     finishAffinity()
                     startActivity(intent)
                 }
